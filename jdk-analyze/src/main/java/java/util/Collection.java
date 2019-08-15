@@ -198,6 +198,9 @@ public interface Collection<E> extends Iterable<E> {
     int hashCode();
 
     /**
+     *
+     * 在此集合中的元素上创建{@link Spliterator}。
+     * TODO 后续如果讲到了{@link Spliterator}再进行补充下面的三个方法
      * Creates a {@link Spliterator} over the elements in this collection.
      *
      * Implementations should document characteristic values reported by the
