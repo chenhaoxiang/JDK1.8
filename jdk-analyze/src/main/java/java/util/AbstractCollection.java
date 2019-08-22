@@ -7,6 +7,10 @@ package java.util;
 
 /**
  * AbstractCollection 是 Java 集合框架中 Collection 接口 的一个直接实现类， Collection 下的大多数子类都继承 AbstractCollection ，比如 List 的实现类, Set的实现类。
+ *
+ * 要实现不可修改的集合，程序员只需要扩展此类并提供iterator和size方法的实现。（该iterator方法返回的迭代器必须实现hasNext和next。）
+ *
+ * 要实现可修改的集合，程序员必须另外覆盖此类的add方法（否则抛出一个UnsupportedOperationException），并且iterator方法返回的迭代器必须另外实现其remove方法。
  */
 
 public abstract class AbstractCollection<E> implements Collection<E> {
