@@ -89,7 +89,6 @@ public interface Collection<E> extends Iterable<E> {
      * 此集合适合指定的数组，如果有空余空间（即，数组的元素多于此集合），则紧跟集合结尾的数组中的元素将设置为<tt> null </ TT>。
      * （如果调用者知道此集合不包含任何<tt> null </ tt>元素，则此选项仅用于确定此集合的长度<i> </ i>。）
      *
-     *
      * 如果此集合对其迭代器返回的元素的顺序做出任何保证，则此方法必须以相同的顺序返回元素。
      *
      * @param <T> 包含集合的数组的运行时类型
@@ -154,12 +153,12 @@ public interface Collection<E> extends Iterable<E> {
 
     /**
      *
-     * 仅保留此集合中包含在指定集合中的元素（可选操作）。换句话说，从此集合中删除未包含在指定集合中的所有元素。
+     * 仅保留此集合中包含在指定集合中的元素。换句话说，从此集合中删除未包含在指定集合中的所有元素。
      */
     boolean retainAll(Collection<?> c);
 
     /**
-     * 移除此 collection 中的所有元素（可选操作）。
+     * 移除此 collection 中的所有元素。
      */
     void clear();
 
