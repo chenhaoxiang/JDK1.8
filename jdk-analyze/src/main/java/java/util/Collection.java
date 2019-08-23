@@ -177,9 +177,12 @@ public interface Collection<E> extends Iterable<E> {
 
     /**
      *
+     * Spliterator是一个可分割迭代器(splitable iterator)，可以和iterator顺序遍历迭代器一起看。jdk1.8发布后，对于并行处理的能力大大增强，Spliterator就是为了并行遍历元素而设计的一个迭代器，jdk1.8中的集合框架中的数据结构都默认实现了spliterator
+     *
      * 在此集合中的元素上创建{@link Spliterator}。
-     * TODO 后续如果讲到了{@link Spliterator}再进行补充下面的三个方法
-     * Creates a {@link Spliterator} over the elements in this collection.
+     *
+     * 后续如果讲到了{@link Spliterator}再进行补充下面的三个方法
+     *
      *
      * Implementations should document characteristic values reported by the
      * spliterator.  Such characteristic values are not required to be reported
