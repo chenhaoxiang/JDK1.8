@@ -1,67 +1,28 @@
 /*
  * Copyright (c) 1997, 2012, Oracle and/or its affiliates. All rights reserved.
  * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
  */
 
 package java.util;
 
 /**
- * This class provides a skeletal implementation of the {@link List}
- * interface to minimize the effort required to implement this interface
- * backed by a "random access" data store (such as an array).  For sequential
- * access data (such as a linked list), {@link AbstractSequentialList} should
- * be used in preference to this class.
+ * 此类提供了List接口的骨架实现(也称为:抽象接口),以最大限度地减少实现由“随机访问”数据存储（如数组）
+ * 所支持的接口所需的工作量.
+ * 对于顺序访问数据(如链表),应该使用AbstractSequentialList类.
  *
- * <p>To implement an unmodifiable list, the programmer needs only to extend
- * this class and provide implementations for the {@link #get(int)} and
- * {@link List#size() size()} methods.
+ * 为了实现一个不可修改的list,程序员上仅仅需要扩展此类,并提供一个get()方法和size()方法的实现即可.
  *
- * <p>To implement a modifiable list, the programmer must additionally
- * override the {@link #set(int, Object) set(int, E)} method (which otherwise
- * throws an {@code UnsupportedOperationException}).  If the list is
- * variable-size the programmer must additionally override the
- * {@link #add(int, Object) add(int, E)} and {@link #remove(int)} methods.
+ * 为了实现一个可以修改的类,程序员上必须额外覆盖set(int,Object),set(int,E)方法.
+ * 如果list的大小是可变的,则程序员上应该额外覆盖add()方法,remove()方法.
  *
- * <p>The programmer should generally provide a void (no argument) and collection
- * constructor, as per the recommendation in the {@link Collection} interface
- * specification.
+ * 根据接口规范中的建议,程序员一般应该提供一个无参构造器方法.
  *
- * <p>Unlike the other abstract collection implementations, the programmer does
- * <i>not</i> have to provide an iterator implementation; the iterator and
- * list iterator are implemented by this class, on top of the "random access"
- * methods:
- * {@link #get(int)},
- * {@link #set(int, Object) set(int, E)},
- * {@link #add(int, Object) add(int, E)} and
- * {@link #remove(int)}.
+ * 和其它抽象集合实现不同,程序员上不必提供给一个迭代器实现:迭代器和list迭代器;迭代器和list迭代器已经在此类
+ * 中实现,在"random access"方法之上.
  *
- * <p>The documentation for each non-abstract method in this class describes its
- * implementation in detail.  Each of these methods may be overridden if the
- * collection being implemented admits a more efficient implementation.
+ * 本类中非抽象方法都描述了其实现的细节.如果集合希望实现一个高性能的方法,有些方法需要被覆写.
  *
- * <p>This class is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
+ * 此类是java集合框架中的一员.
  *
  * @author  Josh Bloch
  * @author  Neal Gafter
@@ -70,39 +31,16 @@ package java.util;
 
 public abstract class AbstractList<E> extends AbstractCollection<E> implements List<E> {
     /**
-     * Sole constructor.  (For invocation by subclass constructors, typically
-     * implicit.)
+     * 唯一的构造方法.(通常由子类构造函数隐式调用,因为protected修饰,且无参数,所以可以被子类使用)
      */
     protected AbstractList() {
     }
 
+
     /**
-     * Appends the specified element to the end of this list (optional
-     * operation).
-     *
-     * <p>Lists that support this operation may place limitations on what
-     * elements may be added to this list.  In particular, some
-     * lists will refuse to add null elements, and others will impose
-     * restrictions on the type of elements that may be added.  List
-     * classes should clearly specify in their documentation any restrictions
-     * on what elements may be added.
-     *
-     * <p>This implementation calls {@code add(size(), e)}.
-     *
-     * <p>Note that this implementation throws an
-     * {@code UnsupportedOperationException} unless
-     * {@link #add(int, Object) add(int, E)} is overridden.
-     *
-     * @param e element to be appended to this list
-     * @return {@code true} (as specified by {@link Collection#add})
-     * @throws UnsupportedOperationException if the {@code add} operation
-     *         is not supported by this list
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this list
-     * @throws NullPointerException if the specified element is null and this
-     *         list does not permit null elements
-     * @throws IllegalArgumentException if some property of this element
-     *         prevents it from being added to this list
+     * 注意:
+     * 1.这一方法如果没有被覆写,则直接抛出异常.因为add(size(),ze)这个add方法抛异常
+     * 2.这一方法调用了size方法，必须实现size方法
      */
     public boolean add(E e) {
         add(size(), e);
@@ -117,10 +55,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     abstract public E get(int index);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation always throws an
-     * {@code UnsupportedOperationException}.
+     * 在index位置设置元素element，覆盖原来的元素
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws ClassCastException            {@inheritDoc}
@@ -133,10 +68,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation always throws an
-     * {@code UnsupportedOperationException}.
+     * 在index添加元素element
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws ClassCastException            {@inheritDoc}
@@ -149,10 +81,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation always throws an
-     * {@code UnsupportedOperationException}.
+     *  移除某个索引位置的元素
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
@@ -162,14 +91,10 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
 
-    // Search Operations
+    // 查询操作
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation first gets a list iterator (with
-     * {@code listIterator()}).  Then, it iterates over the list until the
-     * specified element is found or the end of the list is reached.
+     * 从起始的位置开始搜索元素o，如果当前集合不包含此元素，返回-1,否则返回查找的第一个元素的索引位置
      *
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
@@ -189,20 +114,19 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation first gets a list iterator that points to the end
-     * of the list (with {@code listIterator(size())}).  Then, it iterates
-     * backwards over the list until the specified element is found, or the
-     * beginning of the list is reached.
+     * 最后一次出现元素o的位置，初始化ListIterator时，设置游标位置到末尾
+     * 使用迭代器，从后往前找元素，没找到返回-1，找到返回元素索引位置
      *
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
     public int lastIndexOf(Object o) {
+        //从size()这个位置构建迭代器
         ListIterator<E> it = listIterator(size());
         if (o==null) {
+            //hasPrevious 反向遍历列表，向前查找
             while (it.hasPrevious())
+                //previous 列表中的上一个元素
                 if (it.previous()==null)
                     return it.nextIndex();
         } else {
@@ -217,36 +141,15 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     // Bulk Operations
 
     /**
-     * Removes all of the elements from this list (optional operation).
-     * The list will be empty after this call returns.
-     *
-     * <p>This implementation calls {@code removeRange(0, size())}.
-     *
-     * <p>Note that this implementation throws an
-     * {@code UnsupportedOperationException} unless {@code remove(int
-     * index)} or {@code removeRange(int fromIndex, int toIndex)} is
-     * overridden.
-     *
-     * @throws UnsupportedOperationException if the {@code clear} operation
-     *         is not supported by this list
+     * 清空集合
      */
     public void clear() {
         removeRange(0, size());
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation gets an iterator over the specified collection
-     * and iterates over it, inserting the elements obtained from the
-     * iterator into this list at the appropriate position, one at a time,
-     * using {@code add(int, E)}.
-     * Many implementations will override this method for efficiency.
-     *
-     * <p>Note that this implementation throws an
-     * {@code UnsupportedOperationException} unless
-     * {@link #add(int, Object) add(int, E)} is overridden.
-     *
+     * 将指定集合中的所有元素插入到指定位置的当前列表中（可选操作）。
+     * 在索引位置加入集合c
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
@@ -543,23 +446,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
-     * Removes from this list all of the elements whose index is between
-     * {@code fromIndex}, inclusive, and {@code toIndex}, exclusive.
-     * Shifts any succeeding elements to the left (reduces their index).
-     * This call shortens the list by {@code (toIndex - fromIndex)} elements.
-     * (If {@code toIndex==fromIndex}, this operation has no effect.)
-     *
-     * <p>This method is called by the {@code clear} operation on this list
-     * and its subLists.  Overriding this method to take advantage of
-     * the internals of the list implementation can <i>substantially</i>
-     * improve the performance of the {@code clear} operation on this list
-     * and its subLists.
-     *
-     * <p>This implementation gets a list iterator positioned before
-     * {@code fromIndex}, and repeatedly calls {@code ListIterator.next}
-     * followed by {@code ListIterator.remove} until the entire range has
-     * been removed.  <b>Note: if {@code ListIterator.remove} requires linear
-     * time, this implementation requires quadratic time.</b>
+     * 删除区间元素
      *
      * @param fromIndex index of first element to be removed
      * @param toIndex index after last element to be removed
@@ -600,11 +487,20 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      */
     protected transient int modCount = 0;
 
+    /**
+     * 越界判断,下标检查
+     * @param index
+     */
     private void rangeCheckForAdd(int index) {
         if (index < 0 || index > size())
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
 
+    /**
+     * 组装字符串
+     * @param index
+     * @return
+     */
     private String outOfBoundsMsg(int index) {
         return "Index: "+index+", Size: "+size();
     }
