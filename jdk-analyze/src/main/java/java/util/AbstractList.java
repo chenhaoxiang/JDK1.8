@@ -81,7 +81,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
-     *  移除某个索引位置的元素
+     *  移除某个索引位置后面的一个元素
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
@@ -170,7 +170,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     // Iterators
 
     /**
-     * Returns an iterator over the elements in this list in proper sequence.
+     * 以适当的顺序返回此列表中元素的迭代器
      *
      * <p>This implementation returns a straightforward implementation of the
      * iterator interface, relying on the backing list's {@code size()},
@@ -192,7 +192,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
-     * {@inheritDoc}
+     * 返回一个ListIterator类型的迭代器
      *
      * <p>This implementation returns {@code listIterator(0)}.
      *
@@ -204,6 +204,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
 
     /**
      * {@inheritDoc}
+     * 返回一个ListItr对象
      *
      * <p>This implementation returns a straightforward implementation of the
      * {@code ListIterator} interface that extends the implementation of the
@@ -225,58 +226,80 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public ListIterator<E> listIterator(final int index) {
+        //越界判断,下标检查
         rangeCheckForAdd(index);
-
+        //new 了一个ListItr对象
         return new ListItr(index);
     }
 
+    /**
+     * 实现了Iterator接口
+     */
     private class Itr implements Iterator<E> {
         /**
-         * Index of element to be returned by subsequent call to next.
+         * 后续调用next返回的元素索引。初始为0
+         * 也就是迭代器的游标
          */
         int cursor = 0;
 
         /**
-         * Index of element returned by most recent call to next or
-         * previous.  Reset to -1 if this element is deleted by a call
-         * to remove.
+         * 最近一次调用返回到下一个或上一个的元素索引。如果通过删除调用删除此元素，则重置为-1。
          */
         int lastRet = -1;
 
         /**
-         * The modCount value that the iterator believes that the backing
-         * List should have.  If this expectation is violated, the iterator
-         * has detected concurrent modification.
+         * 迭代器认为后备列表应具有的modCount值。如果违反了此期望，则迭代器已检测到并发修改。
+         * 也就是说，expectedModCount的值在后面迭代中发现不等于modCount，则说明发生了并发操作，会抛出异常
          */
         int expectedModCount = modCount;
 
+        /**
+         * 如果迭代器具有更多元素，则返回true
+         * @return
+         */
         public boolean hasNext() {
             return cursor != size();
         }
 
+        /**
+         * 返回迭代的下一个元素
+         * @return
+         */
         public E next() {
+            //检查是否有并发修改操作
             checkForComodification();
             try {
                 int i = cursor;
+                //调用 子类实现的 get() 方法获取元素
                 E next = get(i);
+                //有迭代操作后就会记录上次迭代的位置
                 lastRet = i;
                 cursor = i + 1;
                 return next;
             } catch (IndexOutOfBoundsException e) {
+                //检查是否有并发修改操作
                 checkForComodification();
                 throw new NoSuchElementException();
             }
         }
 
+        /**
+         * 移除当前迭代器索引指向后面的一个元素
+         */
         public void remove() {
-            if (lastRet < 0)
+            if (lastRet < 0) {
                 throw new IllegalStateException();
+            }
+            //检查是否有并发修改操作
             checkForComodification();
 
             try {
+                //调用需要子类实现的 remove()方法
                 AbstractList.this.remove(lastRet);
-                if (lastRet < cursor)
+                if (lastRet < cursor) {
                     cursor--;
+                }
+                //删除后 上次迭代的记录就会置为 -1,只有调用next才会赋值
                 lastRet = -1;
                 expectedModCount = modCount;
             } catch (IndexOutOfBoundsException e) {
@@ -284,24 +307,46 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             }
         }
 
+        /**
+         * 检测是否有并发操作发生，导致值不一样
+         */
         final void checkForComodification() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
         }
     }
 
+    /**
+     * ListItr 是 Itr 的增强版
+     */
     private class ListItr extends Itr implements ListIterator<E> {
+        /**
+         * 有参构造函数
+         * 多了个指定游标位置的构造参数
+         * 在这里没有检查是否越界，所以需要开发者在new之前进行判断是否越界
+         * @param index
+         */
         ListItr(int index) {
             cursor = index;
         }
 
+        /**
+         * 是否有前面的元素，只有在cursor==0的时候才没有前面的元素
+         * @return
+         */
         public boolean hasPrevious() {
             return cursor != 0;
         }
 
+        /**
+         * 返回索引的前一个元素
+         * @return
+         */
         public E previous() {
+            //检测是否有并发操作发生，导致值不一样
             checkForComodification();
             try {
+                //获取游标前面一位元素
                 int i = cursor - 1;
                 E previous = get(i);
                 lastRet = cursor = i;
