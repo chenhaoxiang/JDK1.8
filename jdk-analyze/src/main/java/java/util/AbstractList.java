@@ -520,6 +520,8 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
     }
 
     /**
+     *
+     * 此列表已被<i>结构修改</ i>的次数。
      * The number of times this list has been <i>structurally modified</i>.
      * Structural modifications are those that change the size of the
      * list, or otherwise perturb it in such a fashion that iterations in
@@ -567,41 +569,85 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
 }
 
 class SubList<E> extends AbstractList<E> {
+    /**
+     * 操作的对象
+     */
     private final AbstractList<E> l;
+    /**
+     * 初始位置
+     */
     private final int offset;
+    /**
+     * 操作后集合大小
+     */
     private int size;
 
+    /**
+     * 其实就是将原来的list对象放到SubList中，同时将子列表的开始下标和结束下标赋给SubList
+     * @param list
+     * @param fromIndex
+     * @param toIndex
+     */
     SubList(AbstractList<E> list, int fromIndex, int toIndex) {
-        if (fromIndex < 0)
+        //这里进行了三个数值的判断
+        if (fromIndex < 0) {
             throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
-        if (toIndex > list.size())
+        }
+        if (toIndex > list.size()) {
             throw new IndexOutOfBoundsException("toIndex = " + toIndex);
-        if (fromIndex > toIndex)
+        }
+        if (fromIndex > toIndex) {
             throw new IllegalArgumentException("fromIndex(" + fromIndex +
-                                               ") > toIndex(" + toIndex + ")");
+                    ") > toIndex(" + toIndex + ")");
+        }
+        //赋值的是引用
         l = list;
+        //开始位置赋值给offset
         offset = fromIndex;
         size = toIndex - fromIndex;
+        //集合被修改的次数，this是当前类的，l是操作类的
         this.modCount = l.modCount;
     }
 
+    /**
+     * 修改子列表中下标为index 的元素，同时也将原list中的元素修改，rangeCheck检查下标越界，checkFormComodification判断list是否同步
+     * @param index
+     * @param element
+     * @return
+     */
     public E set(int index, E element) {
+        //检测越界
         rangeCheck(index);
+        //检测并发
         checkForComodification();
         return l.set(index+offset, element);
     }
 
+    /**
+     * 和set方法类似，母列表开始下标是0，子列表开始下标是offset，所以获取母列表中的元素时，应加上offset
+     * @param index
+     * @return
+     */
     public E get(int index) {
         rangeCheck(index);
         checkForComodification();
         return l.get(index+offset);
     }
 
+    /**
+     * 返回子列表的size
+     * @return
+     */
     public int size() {
         checkForComodification();
         return size;
     }
 
+    /**
+     * 将元素添加到子列表的index位置，首先检查是否同步，调用母列表的add(index,e)方法，这时候母列表的modCount会增加，更新子列表中用来判断和母列表同步的变量this.modCount，子列表的size++
+     * @param index
+     * @param element
+     */
     public void add(int index, E element) {
         rangeCheckForAdd(index);
         checkForComodification();
@@ -610,6 +656,11 @@ class SubList<E> extends AbstractList<E> {
         size++;
     }
 
+    /**
+     * remove方法与add(index,e)方法类似，调用母列表的remove(index)方法
+     * @param index
+     * @return
+     */
     public E remove(int index) {
         rangeCheck(index);
         checkForComodification();
@@ -619,6 +670,11 @@ class SubList<E> extends AbstractList<E> {
         return result;
     }
 
+    /**
+     * 与add(index,e)方法相似，调用母列表的removeRange(fromIndex,toIndex)方法
+     * @param fromIndex index of first element to be removed
+     * @param toIndex index after last element to be removed
+     */
     protected void removeRange(int fromIndex, int toIndex) {
         checkForComodification();
         l.removeRange(fromIndex+offset, toIndex+offset);
@@ -633,25 +689,39 @@ class SubList<E> extends AbstractList<E> {
     public boolean addAll(int index, Collection<? extends E> c) {
         rangeCheckForAdd(index);
         int cSize = c.size();
-        if (cSize==0)
+        if (cSize==0) {
             return false;
+        }
 
         checkForComodification();
         l.addAll(offset+index, c);
+        //同步修改次数
         this.modCount = l.modCount;
+        //修改当前集合的大小
         size += cSize;
         return true;
     }
 
+    /**
+     * 重写了iterator方法，在SubList中不管调用iterator方法，还是listIterator方法都返回的是ListIterator
+     * @return
+     */
     public Iterator<E> iterator() {
         return listIterator();
     }
 
+    /**
+     * 返回一个ListIterator,游标指向指定位置的迭代器
+     * @param index
+     * @return
+     */
     public ListIterator<E> listIterator(final int index) {
         checkForComodification();
         rangeCheckForAdd(index);
 
+        //实现了一波ListIterator的匿名类，不进行多讲了，后面讲ListIterator
         return new ListIterator<E>() {
+            //维护了一个l的迭代器
             private final ListIterator<E> i = l.listIterator(index+offset);
 
             public boolean hasNext() {
@@ -702,15 +772,29 @@ class SubList<E> extends AbstractList<E> {
         };
     }
 
+    /**
+     * 子列表获取子列表
+     * @param fromIndex
+     * @param toIndex
+     * @return
+     */
     public List<E> subList(int fromIndex, int toIndex) {
         return new SubList<>(this, fromIndex, toIndex);
     }
 
+    /**
+     * 检查覆盖元素的越界
+     * @param index
+     */
     private void rangeCheck(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
 
+    /**
+     * 检查添加元素的越界，与rangeCheck的区别就是不能等于集合大小
+     * @param index
+     */
     private void rangeCheckForAdd(int index) {
         if (index < 0 || index > size)
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
@@ -720,6 +804,9 @@ class SubList<E> extends AbstractList<E> {
         return "Index: "+index+", Size: "+size;
     }
 
+    /**
+     * 检查母列表和子列表的同步
+     */
     private void checkForComodification() {
         if (this.modCount != l.modCount)
             throw new ConcurrentModificationException();
@@ -728,6 +815,7 @@ class SubList<E> extends AbstractList<E> {
 
 class RandomAccessSubList<E> extends SubList<E> implements RandomAccess {
     RandomAccessSubList(AbstractList<E> list, int fromIndex, int toIndex) {
+        //调用了SubList的构造方法
         super(list, fromIndex, toIndex);
     }
 
