@@ -284,7 +284,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
         }
 
         /**
-         * 移除当前迭代器索引指向后面的一个元素
+         * 移除当前迭代器最近操作的一个元素，在next会赋值为i
          */
         public void remove() {
             if (lastRet < 0) {
@@ -349,6 +349,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
                 //获取游标前面一位元素
                 int i = cursor - 1;
                 E previous = get(i);
+                //游标前移，上次操作位置前移
                 lastRet = cursor = i;
                 return previous;
             } catch (IndexOutOfBoundsException e) {
@@ -357,20 +358,36 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             }
         }
 
+        /**
+         * 下一个元素的位置就是当前游标所在位置
+         * @return
+         */
         public int nextIndex() {
             return cursor;
         }
 
+        /**
+         * 上一个元素的位置就是当前游标减1的位置
+         * @return
+         */
         public int previousIndex() {
             return cursor-1;
         }
 
+        /**
+         * 设置元素到上次操作的位置处，注意是覆盖！
+         * @param e the element with which to replace the last element returned by
+         *          {@code next} or {@code previous}
+         */
         public void set(E e) {
-            if (lastRet < 0)
+            if (lastRet < 0) {
                 throw new IllegalStateException();
+            }
+            //检测是否有并发操作发生
             checkForComodification();
 
             try {
+                //将元素设置到上次操作的位置处，实现类也记得注意检查lastRet的范围
                 AbstractList.this.set(lastRet, e);
                 expectedModCount = modCount;
             } catch (IndexOutOfBoundsException ex) {
@@ -378,12 +395,18 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             }
         }
 
+        /**
+         * 添加元素
+         * @param e the element to insert
+         */
         public void add(E e) {
             checkForComodification();
 
             try {
                 int i = cursor;
+                //将元素添加到游标的位置
                 AbstractList.this.add(i, e);
+                //将上次操作的位置设置为-1
                 lastRet = -1;
                 cursor = i + 1;
                 expectedModCount = modCount;
