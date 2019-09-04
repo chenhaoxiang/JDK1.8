@@ -153,7 +153,9 @@ public class ArrayList<E> extends AbstractList<E>
     public void trimToSize() {
         //列表结构修改次数+1
         modCount++;
+        //集合实际大小小于数组大小
         if (size < elementData.length) {
+            //如果size=0，赋值为空数组，否则拷贝一份size大小的数组，Arrays类后面讲
             elementData = (size == 0)
               ? EMPTY_ELEMENTDATA
               : Arrays.copyOf(elementData, size);
@@ -161,9 +163,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Increases the capacity of this <tt>ArrayList</tt> instance, if
-     * necessary, to ensure that it can hold at least the number of elements
-     * specified by the minimum capacity argument.
+     * Increases the capacity of this <tt>ArrayList</tt> instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
      *
      * @param   minCapacity   the desired minimum capacity
      */
