@@ -31,65 +31,17 @@ import java.util.function.UnaryOperator;
 import sun.misc.SharedSecrets;
 
 /**
- * Resizable-array implementation of the <tt>List</tt> interface.  Implements
- * all optional list operations, and permits all elements, including
- * <tt>null</tt>.  In addition to implementing the <tt>List</tt> interface,
- * this class provides methods to manipulate the size of the array that is
- * used internally to store the list.  (This class is roughly equivalent to
- * <tt>Vector</tt>, except that it is unsynchronized.)
+ * ArrayList 继承了 AbstractList 类，此类提供了 List 接口的骨干实现，继承此类的子类适合用于“随机访问”数据存储（如数组），Vector 也是此类的子类。
  *
- * <p>The <tt>size</tt>, <tt>isEmpty</tt>, <tt>get</tt>, <tt>set</tt>,
- * <tt>iterator</tt>, and <tt>listIterator</tt> operations run in constant
- * time.  The <tt>add</tt> operation runs in <i>amortized constant time</i>,
- * that is, adding n elements requires O(n) time.  All of the other operations
- * run in linear time (roughly speaking).  The constant factor is low compared
- * to that for the <tt>LinkedList</tt> implementation.
+ * 与 AbstractList 类对应的类是 AbstractSequentialList 类，继承该类的子类适合用于“连续访问”数据存储（如链接列表），代表的子类如 LinkedList 。
  *
- * <p>Each <tt>ArrayList</tt> instance has a <i>capacity</i>.  The capacity is
- * the size of the array used to store the elements in the list.  It is always
- * at least as large as the list size.  As elements are added to an ArrayList,
- * its capacity grows automatically.  The details of the growth policy are not
- * specified beyond the fact that adding an element has constant amortized
- * time cost.
+ * ArrayList 实现了 List 接口，List 接口通常表示一个列表（数组、队列、链表、栈等），其中的元素可以重复，代表的实现类有 ArrayList、LinkedList、Stack、Vector。
  *
- * <p>An application can increase the capacity of an <tt>ArrayList</tt> instance
- * before adding a large number of elements using the <tt>ensureCapacity</tt>
- * operation.  This may reduce the amount of incremental reallocation.
+ * ArrayList 实现了 RandomAccess 接口，该接口为标记接口，用来表明其支持快速随机访问。
  *
- * <p><strong>Note that this implementation is not synchronized.</strong>
- * If multiple threads access an <tt>ArrayList</tt> instance concurrently,
- * and at least one of the threads modifies the list structurally, it
- * <i>must</i> be synchronized externally.  (A structural modification is
- * any operation that adds or deletes one or more elements, or explicitly
- * resizes the backing array; merely setting the value of an element is not
- * a structural modification.)  This is typically accomplished by
- * synchronizing on some object that naturally encapsulates the list.
+ * ArrayList 实现了 Cloneable 接口，以指示 Object.clone() 方法可以合法地对该类实例进行按字段复制。
  *
- * If no such object exists, the list should be "wrapped" using the
- * {@link Collections#synchronizedList Collections.synchronizedList}
- * method.  This is best done at creation time, to prevent accidental
- * unsynchronized access to the list:<pre>
- *   List list = Collections.synchronizedList(new ArrayList(...));</pre>
- *
- * <p><a name="fail-fast">
- * The iterators returned by this class's {@link #iterator() iterator} and
- * {@link #listIterator(int) listIterator} methods are <em>fail-fast</em>:</a>
- * if the list is structurally modified at any time after the iterator is
- * created, in any way except through the iterator's own
- * {@link ListIterator#remove() remove} or
- * {@link ListIterator#add(Object) add} methods, the iterator will throw a
- * {@link ConcurrentModificationException}.  Thus, in the face of
- * concurrent modification, the iterator fails quickly and cleanly, rather
- * than risking arbitrary, non-deterministic behavior at an undetermined
- * time in the future.
- *
- * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
- * as it is, generally speaking, impossible to make any hard guarantees in the
- * presence of unsynchronized concurrent modification.  Fail-fast iterators
- * throw {@code ConcurrentModificationException} on a best-effort basis.
- * Therefore, it would be wrong to write a program that depended on this
- * exception for its correctness:  <i>the fail-fast behavior of iterators
- * should be used only to detect bugs.</i>
+ * ArrayList 实现了 Serializable 接口，因此它支持序列化，能够通过序列化传输。
  *
  * <p>This class is a member of the
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
@@ -107,43 +59,49 @@ import sun.misc.SharedSecrets;
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
 {
+    /**
+     * 序列版本号
+     */
     private static final long serialVersionUID = 8683452581122892189L;
 
     /**
-     * Default initial capacity.
+     * 默认的集合容量
      */
     private static final int DEFAULT_CAPACITY = 10;
 
     /**
-     * Shared empty array instance used for empty instances.
+     * 用于空实例的共享空数组实例
      */
     private static final Object[] EMPTY_ELEMENTDATA = {};
 
     /**
-     * Shared empty array instance used for default sized empty instances. We
-     * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
-     * first element is added.
+     * 用于默认大小的空实例的共享空数组实例。
+     * 我们将此与EMPTY_ELEMENTDATA区分开来，以了解添加第一个元素时要膨胀多少。
+     * 注意DEFAULTCAPACITY_EMPTY_ELEMENTDATA类型为static final，表明其在内存中只有一份且禁止修改。
      */
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
 
     /**
-     * The array buffer into which the elements of the ArrayList are stored.
-     * The capacity of the ArrayList is the length of this array buffer. Any
-     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     * 存储ArrayList元素的数组缓冲区。
+     * ArrayList的容量是此数组缓冲区的长度。
+     *添加第一个元素时，任何带有elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA的空ArrayList都将扩展为DEFAULT_CAPACITY。
+     * 注意elementData使用transient修饰。表明在采用Java默认的序列化机制的时候，被该关键字修饰的属性不会被序列化
+     * 而ArrayList类实现了java.io.Serializable接口，即采用了Java默认的序列化机制。但是elementData在网络传输的时候不序列化肯定是不行的，翻看源码会发现ArrayList自己实现了序列化和反序列化的方法。 writeObject与readObject
+     * 非私有，以简化嵌套类访问
      */
-    transient Object[] elementData; // non-private to simplify nested class access
+    transient Object[] elementData;
 
     /**
-     * The size of the ArrayList (the number of elements it contains).
+     * ArrayList的大小（它包含的元素数）。
      *
      * @serial
      */
     private int size;
 
     /**
-     * Constructs an empty list with the specified initial capacity.
+     * 指定初始容量构造
      *
+     * 逻辑非常简单，如果初始容量>0，则创建一个该大小的数组。如果容量为0，则创建一个空数组。如果容量<0，抛出异常。
      * @param  initialCapacity  the initial capacity of the list
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
@@ -160,26 +118,27 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Constructs an empty list with an initial capacity of ten.
+     * 空参构造
+     * 创建一个空的集合。elementData成员变量是用来存放数据的对象,是一个Object[]，DEFAULTCAPACITY_EMPTY_ELEMENTDATA则是一个空的数组
      */
     public ArrayList() {
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
     }
 
     /**
-     * Constructs a list containing the elements of the specified
-     * collection, in the order they are returned by the collection's
-     * iterator.
+     * 初始化传递集合
      *
      * @param c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
      */
     public ArrayList(Collection<? extends E> c) {
+        //直接将集合转换为Object数组，赋值给了elementData属性
         elementData = c.toArray();
         if ((size = elementData.length) != 0) {
             // c.toArray might (incorrectly) not return Object[] (see 6260652)
-            if (elementData.getClass() != Object[].class)
+            if (elementData.getClass() != Object[].class) {
                 elementData = Arrays.copyOf(elementData, size, Object[].class);
+            }
         } else {
             // replace with empty array.
             this.elementData = EMPTY_ELEMENTDATA;
@@ -240,10 +199,9 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
+     * 要分配的最大数组大小。
+     * 有些VM会在数组中保留一些空间。
+     * 尝试分配更大的数组可能会导致OutOfMemoryError：请求的数组大小超过VM限制
      */
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
