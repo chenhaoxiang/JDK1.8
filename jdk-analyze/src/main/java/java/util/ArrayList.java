@@ -126,31 +126,32 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * 初始化传递集合
+     * 带Collection对象的构造函数
      *
-     * @param c the collection whose elements are to be placed into this list
-     * @throws NullPointerException if the specified collection is null
+     * @param c 要将其元素放入此列表的集合
+     * @throws NullPointerException 如果指定的集合为null
      */
     public ArrayList(Collection<? extends E> c) {
-        //直接将集合转换为Object数组，赋值给了elementData属性
+        //将collection对象转换成数组，然后将数组的地址的赋给elementData。
         elementData = c.toArray();
         if ((size = elementData.length) != 0) {
             // c.toArray might (incorrectly) not return Object[] (see 6260652)
             if (elementData.getClass() != Object[].class) {
+                //如果size的值大于0，则执行Arrays.copy方法，把collection对象的内容（可以理解为深拷贝）copy到elementData中。
                 elementData = Arrays.copyOf(elementData, size, Object[].class);
             }
         } else {
-            // replace with empty array.
+            //更新size的值，同时判断size的大小，如果是size等于0，直接将空对象EMPTY_ELEMENTDATA的地址赋给elementData
             this.elementData = EMPTY_ELEMENTDATA;
         }
     }
 
     /**
-     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
-     * list's current size.  An application can use this operation to minimize
-     * the storage of an <tt>ArrayList</tt> instance.
+     * 将此<tt> ArrayList </ tt>实例的容量调整为列表的当前大小。应用程序可以使用此操作来最小化<tt> ArrayList </ tt>实例的存储
+     * 类似于将数组多余的空间给压缩。例如a,b两个元素，数组大小开辟了10。调用此方法，将数组也调整为2.
      */
     public void trimToSize() {
+        //列表结构修改次数+1
         modCount++;
         if (size < elementData.length) {
             elementData = (size == 0)
