@@ -4,6 +4,10 @@ JDK1.8源码解析，注释以及分析说明
 # 博客文章导航地址  
 https://github.com/chenhaoxiang/JDK1.8/tree/master/doc
 
+# 乐扣算法题目解析导航地址  
+https://github.com/chenhaoxiang/JDK1.8/tree/master/leetcode
+
+
 # 集合部分  
 
 ## Collection
