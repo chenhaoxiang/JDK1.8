@@ -483,27 +483,23 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Removes the first occurrence of the specified element from this list,
-     * if it is present.  If the list does not contain the element, it is
-     * unchanged.  More formally, removes the element with the lowest index
-     * <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
-     * (if such an element exists).  Returns <tt>true</tt> if this list
-     * contained the specified element (or equivalently, if this list
-     * changed as a result of the call).
-     *
+     * 从此列表中删除指定元素的第一个匹配项，
+     * 如果列表不包含该元素，则不会更改。更正式地，删除具有最低索引<tt> i </ tt>的元素，使得<tt>（o == null？get（i）== null：o.equals（get（i）））</ tt >（如果存在这样的元素）。
+     * 如果此列表包含指定的元素，则返回<tt> true </ tt>（或等效地，如果此列表因调用而更改）。
      * @param o element to be removed from this list, if present
      * @return <tt>true</tt> if this list contained the specified element
      */
     public boolean remove(Object o) {
         if (o == null) {
             for (int index = 0; index < size; index++)
+                //删除null值
                 if (elementData[index] == null) {
                     fastRemove(index);
                     return true;
                 }
         } else {
             for (int index = 0; index < size; index++)
+                //删除匹配的值
                 if (o.equals(elementData[index])) {
                     fastRemove(index);
                     return true;
@@ -513,8 +509,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /*
-     * Private remove method that skips bounds checking and does not
-     * return the value removed.
+     * 私有删除方法，跳过边界检查，不返回删除的值。
      */
     private void fastRemove(int index) {
         modCount++;
