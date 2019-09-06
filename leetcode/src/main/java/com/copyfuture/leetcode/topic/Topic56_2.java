@@ -4,8 +4,6 @@
  */
 package com.copyfuture.leetcode.topic;
 
-import java.util.Arrays;
-
 /**
  * 不进行排序的写法
  * 题目链接：https://leetcode-cn.com/problems/merge-intervals/
