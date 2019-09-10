@@ -163,19 +163,19 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Increases the capacity of this <tt>ArrayList</tt> instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+     * 如有必要，增加此<tt> ArrayList </ tt>实例的容量，以确保它至少可以容纳由minCapacity参数指定的元素数。
      *
-     * @param   minCapacity   the desired minimum capacity
+     * @param   minCapacity   所需的最小容量
      */
     public void ensureCapacity(int minCapacity) {
         int minExpand = (elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
-            // any size if not default element table
+            // 如果不是默认元素数组，直接赋值0
             ? 0
-            // larger than default for default empty table. It's already
-            // supposed to be at default size.
+            // 否则给上默认的大小
             : DEFAULT_CAPACITY;
-
+        //如果给定的容量小于默认大小或者0，那么肯定没有扩容的必要
         if (minCapacity > minExpand) {
+            //进行扩容，操作+1 modCount
             ensureExplicitCapacity(minCapacity);
         }
     }
@@ -265,61 +265,66 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns <tt>true</tt> if this list contains the specified element.
-     * More formally, returns <tt>true</tt> if and only if this list contains
-     * at least one element <tt>e</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
+     * 如果此列表包含指定的元素，则返回<tt> true </ tt>。
+     * 更正式地，当且仅当此列表包含至少一个元素<tt> e </ tt>时才返回<tt> true </ tt>
+     * <tt>（o == null？e == null：o.equals（e））</ tt>。
      *
-     * @param o element whose presence in this list is to be tested
-     * @return <tt>true</tt> if this list contains the specified element
+     * @param o 要测试其在此列表中的存在的元素
+     * @return <tt> true </ tt>如果此列表包含指定的元素
      */
     public boolean contains(Object o) {
         return indexOf(o) >= 0;
     }
 
     /**
-     * Returns the index of the first occurrence of the specified element
-     * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the lowest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
-     * or -1 if there is no such index.
+     * 返回此列表中第一次出现的指定元素的索引，如果此列表不包含该元素，则返回-1。
+     *  更正式地，返回最低索引<tt> i </ tt>使得<tt>（o == null？get（i）== null：o.equals（get（i）））</ tt>，如果没有这样的索引，则返回-1。
      */
     public int indexOf(Object o) {
+        //从0位置的元素开始遍历，然后查找到相同元素后返回索引
         if (o == null) {
-            for (int i = 0; i < size; i++)
-                if (elementData[i]==null)
+            for (int i = 0; i < size; i++) {
+                //null值也可以判断
+                if (elementData[i] == null) {
                     return i;
+                }
+            }
         } else {
-            for (int i = 0; i < size; i++)
-                if (o.equals(elementData[i]))
+            for (int i = 0; i < size; i++) {
+                //根据equals方法判断
+                if (o.equals(elementData[i])) {
                     return i;
+                }
+            }
         }
+        //未找到返回-1
         return -1;
     }
 
     /**
-     * Returns the index of the last occurrence of the specified element
-     * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the highest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
-     * or -1 if there is no such index.
+     * 返回此列表中指定元素最后一次出现的索引，如果此列表不包含该元素，则返回-1。
+     * 更正式地，返回最高指数<tt> i </ tt>使得<tt>（o == null？get（i）== null：o.equals（get（i）））</ tt>，如果没有这样的索引，则返回-1。
      */
     public int lastIndexOf(Object o) {
         if (o == null) {
-            for (int i = size-1; i >= 0; i--)
-                if (elementData[i]==null)
+            for (int i = size-1; i >= 0; i--) {
+                if (elementData[i] == null) {
                     return i;
+                }
+            }
         } else {
-            for (int i = size-1; i >= 0; i--)
-                if (o.equals(elementData[i]))
+            for (int i = size-1; i >= 0; i--) {
+                if (o.equals(elementData[i])) {
                     return i;
+                }
+            }
         }
+        //未找到返回-1
         return -1;
     }
 
     /**
-     * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
-     * elements themselves are not copied.)
+     * 返回此<tt> ArrayList </ tt>实例的浅表副本。 （元素本身不会被复制。）
      *
      * @return a clone of this <tt>ArrayList</tt> instance
      */
@@ -521,13 +526,12 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Removes all of the elements from this list.  The list will
-     * be empty after this call returns.
+     * 删除此列表中的所有元素。此调用返回后，列表将为空。
      */
     public void clear() {
         modCount++;
 
-        // clear to let GC do its work
+        // 明确让GC做它的工作
         for (int i = 0; i < size; i++)
             elementData[i] = null;
 
@@ -554,16 +558,13 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Inserts all of the elements in the specified collection into this
-     * list, starting at the specified position.  Shifts the element
-     * currently at that position (if any) and any subsequent elements to
-     * the right (increases their indices).  The new elements will appear
-     * in the list in the order that they are returned by the
-     * specified collection's iterator.
+     * 从指定位置开始，将指定集合中的所有元素插入此列表。
+     * 将当前位于该位置的元素（如果有）和任何后续元素向右移动（增加其索引）。
+     * 新元素将按照指定集合的​​迭代器返回的顺序出现在列表中。
      *
-     * @param index index at which to insert the first element from the
-     *              specified collection
-     * @param c collection containing elements to be added to this list
+     * @param index 从中插入指定集合中第一个元素的索引
+     *
+     * @param c 包含要添加到此列表的元素的集合
      * @return <tt>true</tt> if this list changed as a result of the call
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws NullPointerException if the specified collection is null
@@ -571,18 +572,24 @@ public class ArrayList<E> extends AbstractList<E>
     public boolean addAll(int index, Collection<? extends E> c) {
         //检查是否越界
         rangeCheckForAdd(index);
-
+        //获取c集合的数组
         Object[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);  // Increments modCount
+//        增加modCount，如果需要扩容，进行扩容
+        ensureCapacityInternal(size + numNew);
 
+        //需要移动的元素数量，在index后的元素都需要往后移
         int numMoved = size - index;
-        if (numMoved > 0)
+        if (numMoved > 0) {
+            //将elementData从index的元素开始 拷贝到index+numNew后去
             System.arraycopy(elementData, index, elementData, index + numNew,
-                             numMoved);
-
+                    numMoved);
+        }
+        //将a数据元素全部拷贝到elementData中，从index开始
         System.arraycopy(a, 0, elementData, index, numNew);
+        //size增加
         size += numNew;
+        //c中没有元素，返回的是false
         return numNew != 0;
     }
 
