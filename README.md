@@ -12,6 +12,7 @@ https://github.com/chenhaoxiang/JDK1.8/tree/master/leetcode
 
 ## Collection
 文章地址：  
+https://copyfuture.com/blogs-details/20190910135225856szh6cv83a7xawks  
 
 源码地址：  
 https://github.com/chenhaoxiang/JDK1.8/blob/master/jdk-analyze/src/main/java/java/util/Collection.java  
