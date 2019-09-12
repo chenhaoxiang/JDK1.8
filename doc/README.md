@@ -15,3 +15,9 @@ https://copyfuture.com/blogs-details/201909061555306597xvo4pefwz7sy68
 
 原文地址：  
 https://copyfuture.com/blogs-details/20190910135225856szh6cv83a7xawks
+
+
+#### 为什么我会这么多技术，还这么难找工作
+
+原文地址：  
+https://copyfuture.com/blogs-details/201909121521222967lzuru8ty4p43qj  
