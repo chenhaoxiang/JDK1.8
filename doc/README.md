@@ -21,3 +21,8 @@ https://copyfuture.com/blogs-details/20190910135225856szh6cv83a7xawks
 
 原文地址：  
 https://copyfuture.com/blogs-details/201909121521222967lzuru8ty4p43qj  
+
+#### [集合]AbstractCollection源码解析(2)
+
+原文地址：  
+https://copyfuture.com/blogs-details/20190916164907029u89mfh84bq6dmn5
