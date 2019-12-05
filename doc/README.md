@@ -32,3 +32,11 @@ https://copyfuture.com/blogs-details/20190916164907029u89mfh84bq6dmn5
 原文地址：  
 https://copyfuture.com/blogs-details/20191017160706614rpgeagffzztaeod
 
+#### 五年青青修福报，绝症维权难奈何
+
+原文地址：  
+https://copyfuture.com/blogs-details/20191125172011541s8z93qzweir9phx
+
+
+
+
