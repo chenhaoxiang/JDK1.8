@@ -25,10 +25,11 @@
 
 package java.util;
 
+import sun.misc.SharedSecrets;
+
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import sun.misc.SharedSecrets;
 
 /**
  * ArrayList 继承了 AbstractList 类，此类提供了 List 接口的骨干实现，继承此类的子类适合用于“随机访问”数据存储（如数组），Vector 也是此类的子类。
@@ -775,12 +776,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns a list iterator over the elements in this list (in proper
-     * sequence), starting at the specified position in the list.
-     * The specified index indicates the first element that would be
-     * returned by an initial call to {@link ListIterator#next next}.
-     * An initial call to {@link ListIterator#previous previous} would
-     * return the element with the specified index minus one.
+     * 返回ListIterator，开始位置为指定参数
      *
      * <p>The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
      *
@@ -795,7 +791,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Returns a list iterator over the elements in this list (in proper
      * sequence).
-     *
+     * 返回一个开始位置为0的ListItr
      * <p>The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
      *
      * @see #listIterator(int)
@@ -816,16 +812,20 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * An optimized version of AbstractList.Itr
+     * AbstractList.Itr的优化版本
      */
     private class Itr implements Iterator<E> {
+        //默认是0 - 要返回的下一个元素的索引
         int cursor;       // index of next element to return
+        //默认是-1，上次返回的元素（删除的标志位）
         int lastRet = -1; // index of last element returned; -1 if no such
+        //用于判断集合是否修改过结构的标识
         int expectedModCount = modCount;
 
         Itr() {}
 
         public boolean hasNext() {
+            //游标是否移动至尾部
             return cursor != size;
         }
 
@@ -833,30 +833,50 @@ public class ArrayList<E> extends AbstractList<E>
         public E next() {
             checkForComodification();
             int i = cursor;
-            if (i >= size)
+            if (i >= size) {
+                //判断是否越界
                 throw new NoSuchElementException();
+            }
             Object[] elementData = ArrayList.this.elementData;
-            if (i >= elementData.length)
+            if (i >= elementData.length) {
+                //再次判断是否越界， 如果有异步线程修改了List，则会抛出异常
                 throw new ConcurrentModificationException();
+            }
+            //游标+1
             cursor = i + 1;
+            //返回元素 ，并设置上一次返回的元素的下标
             return (E) elementData[lastRet = i];
         }
 
+        /**
+         * 移除 上一次next的元素
+         */
         public void remove() {
-            if (lastRet < 0)
+            if (lastRet < 0) {
+                //先判断是否next过,如果没有，抛出异常. 所以只能先next才能进行remove，lastRet需要重新赋值
                 throw new IllegalStateException();
+            }
             checkForComodification();
 
             try {
+                //删除此列表中指定位置的元素 - remove方法内会修改 modCount 所以后面要更新Iterator里的这个标志值
                 ArrayList.this.remove(lastRet);
+                //要删除的游标
                 cursor = lastRet;
+                //不能重复删除 所以修改删除的标志位
                 lastRet = -1;
+                //更新 判断集合是否修改的标志，
                 expectedModCount = modCount;
             } catch (IndexOutOfBoundsException ex) {
                 throw new ConcurrentModificationException();
             }
         }
 
+        /**
+         * 对迭代器中每个剩余元素执行给定的操作，直到遍历完所有元素
+         * 1.8之后的方法
+         * @param consumer
+         */
         @Override
         @SuppressWarnings("unchecked")
         public void forEachRemaining(Consumer<? super E> consumer) {
@@ -879,14 +899,20 @@ public class ArrayList<E> extends AbstractList<E>
             checkForComodification();
         }
 
+        /**
+         * 判断是否修改过了List的结构，如果有修改，抛出异常
+         */
         final void checkForComodification() {
-            if (modCount != expectedModCount)
+            //发生了add、remove操作,查看add等的源代码，有modCount++
+            if (modCount != expectedModCount) {
                 throw new ConcurrentModificationException();
+            }
         }
     }
 
     /**
-     * An optimized version of AbstractList.ListItr
+     * AbstractList.ListItr的优化版本
+     * ListIterator迭代器实现
      */
     private class ListItr extends Itr implements ListIterator<E> {
         ListItr(int index) {
@@ -894,18 +920,34 @@ public class ArrayList<E> extends AbstractList<E>
             cursor = index;
         }
 
+        /**
+         * 是否有前面的元素，只有在cursor==0的时候才没有前面的元素
+         * @return
+         */
         public boolean hasPrevious() {
             return cursor != 0;
         }
 
+        /**
+         * 下一个元素的位置就是当前游标所在位置
+         * @return
+         */
         public int nextIndex() {
             return cursor;
         }
 
+        /**
+         * 上一个元素的位置就是当前游标减1的位置
+         * @return
+         */
         public int previousIndex() {
             return cursor - 1;
         }
 
+        /**
+         * 返回索引的前一个元素
+         * @return
+         */
         @SuppressWarnings("unchecked")
         public E previous() {
             checkForComodification();
@@ -919,6 +961,10 @@ public class ArrayList<E> extends AbstractList<E>
             return (E) elementData[lastRet = i];
         }
 
+        /**
+         * 设置元素到上次操作的位置处，注意是覆盖！
+         * @param e
+         */
         public void set(E e) {
             if (lastRet < 0)
                 throw new IllegalStateException();
@@ -931,12 +977,18 @@ public class ArrayList<E> extends AbstractList<E>
             }
         }
 
+        /**
+         * 添加元素
+         * @param e
+         */
         public void add(E e) {
             checkForComodification();
 
             try {
                 int i = cursor;
+                //将元素添加到游标的位置
                 ArrayList.this.add(i, e);
+                //游标+1
                 cursor = i + 1;
                 lastRet = -1;
                 expectedModCount = modCount;
@@ -1066,6 +1118,10 @@ public class ArrayList<E> extends AbstractList<E>
             return true;
         }
 
+        /**
+         * 返回ListIterator，开始位置为0
+         * @return
+         */
         public Iterator<E> iterator() {
             return listIterator();
         }
